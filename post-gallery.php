@@ -3,7 +3,7 @@
 Plugin Name: post gallery
 Plugin URI: http://www.zeevm.co.il
 Description: Creates a nice post gallery/post archive, uses a choosen category to show a grid list of posts with image, read more and the excerpt.
-Version: 0.3
+Version: 0.4
 Author URI: ze'ev ma'ayan
 Author URI: http://www.zeevm.co.il
 
@@ -42,64 +42,30 @@ function button_shortcode( $atts, $content = null ) {
       'cat' => 'cat',
 	  'onpage' => 'onpage',
 	  'words' => 'words'
-      ), $atts ) );?>
-	  <ul class="zeevul">
-<?php query_posts( array ( 'cat' => $cat, 'posts_per_page' => $onpage));
-if (have_posts()) : while (have_posts()) : the_post();
+      ), $atts ) );
+	  $xoutput='<ul class="zeevul">';
+	query_posts( array ( 'cat' => $cat, 'posts_per_page' => $onpage));
+	if (have_posts()) : while (have_posts()) : the_post();
   // do whatever you want
-?>
-<li>
-					<h2 href="<?php the_permalink(); ?>"><?php the_title(); ?></h2>
-					<?php
-                if(has_post_thumbnail()) { ?>
-                    <div class="entry-thumbnail">
-                        <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail();?></a>
-                    </div>
-            <?php } else { ?>
-                <div class="entry-thumbnail">
-                    <a href="<?php the_permalink(); ?>"><img src="<?php echo plugins_url(); ?>/post-gallery-and-archive/default-img.png" alt="Image Unavailable" /></a>
-                </div>
-            <?php } ?>
+	$xoutput.='<li><h2 href="'.get_permalink().'">'.get_the_title().'</h2>';
 
-<p><?php echo excerpt($words); ?></p>
-<a href="<?php the_permalink(); ?>">Read More >></a>
-	</li>
-<?php
+	if(has_post_thumbnail()) { 
+		$xoutput.='<div class="entry-thumbnail"><a href="'.get_permalink().'">'.get_the_post_thumbnail().'</a></div>';
+		} else {
+		$xoutput.='<div class="entry-thumbnail"><a href="'.get_permalink().'"><img src="'.plugins_url().'/post-gallery-and-archive/default-img.png" alt="Image Unavailable" /></a></div>';
+		}
+	$xoutput.='<p>'.excerpt($words).'</p><a href="'.get_permalink().'">Read More >></a></li>';
 endwhile;
 wp_reset_query();
-?><?php endif;
+endif;
 // style it up
- ?>
-</ul>
-<style>
-ul.zeevul {
-width:100%;
-}
-ul.zeevul li {
-list-style:none!important;
-float:left;
-width:27%;
-margin-left:2%;
-margin-top:20px;
-}
-ul.zeevul li img{
-width:100%;
-height:150px;
-}
-ul.zeevul li img:hover{
-opacity:0.6;
-filter:alpha(opacity=60); /* For IE8 and earlier */
-}
-@media screen and (max-width: 1024px){
-ul.zeevul li {
-width:100%;
-margin-left:0;
-margin-top:5px;
-}
-}
-</style>
-<?php
- 
+$xoutput.='</ul>'.PHP_EOL.'<style>'.PHP_EOL.'ul.zeevul {width:100%;}'.PHP_EOL;
+$xoutput.='ul.zeevul li {list-style:none!important;float:left;width:27%;margin-left:2%;margin-top:20px;}'.PHP_EOL;
+$xoutput.='ul.zeevul li img{width:100%;height:150px;}'.PHP_EOL;
+$xoutput.='ul.zeevul li img:hover{opacity:0.6;filter:alpha(opacity=60); /* For IE8 and earlier */}'.PHP_EOL;
+$xoutput.='@media screen and (max-width: 1024px){ul.zeevul li {width:100%;margin-left:0;margin-top:5px;}}'.PHP_EOL;
+$xoutput.='</style>';
+return $xoutput;
 } 
 Function archive()  { return sheker();}
 add_shortcode('post-gallery', 'button_shortcode');
